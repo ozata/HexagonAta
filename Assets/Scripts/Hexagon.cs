@@ -2,28 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Hexagon : MonoBehaviour {
+public class Hexagon {
 
     public int id;
-    public Color color;
-    // for bomb hexagons
+    public int color;
+    // Count if the hexagon type is bomb
     public int count;
+    // TODO: Change this to ENUM if time.
+    // type: 1 = normal, 2 = bomb
     public int type;
 
-    public Hexagon (int id, Color color, int count, int type) {
-        this.id = 1;
+    public Hexagon (int id, int color, int count, int type) {
+        this.id = id;
         this.color = color;
         this.count = count;
         this.type = type;
-    }
-
-    // Start is called before the first frame update
-    void Start () {
-
-    }
-
-    // Update is called once per frame
-    void Update () {
-
     }
 }
