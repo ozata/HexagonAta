@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 792445989235708076}
   - component: {fileID: 7431362759263647315}
   - component: {fileID: 494711908770363163}
+  - component: {fileID: 5271309639120818732}
   m_Layer: 5
-  m_Name: Image
+  m_Name: Hexagon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -74,3 +75,16 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!65 &5271309639120818732
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8454900888372898315}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 96, y: 96, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
