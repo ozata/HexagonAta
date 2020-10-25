@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Hexagon {
+public class Hexagon : MonoBehaviour {
 
     public int id;
     public int color;
