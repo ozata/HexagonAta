@@ -35,16 +35,14 @@ public class GridManager : MonoBehaviour {
         canvasTransform = GameObject.FindGameObjectWithTag ("Canvas").transform;
         widthPiece = (float) Screen.width / 10;
         heightPiece = (float) Screen.height / 10;
-
         CreateRandomColor ();
         GenerateGridOnScreen ();
-        CheckMatches ();
-        DestroyMatches ();
-
     }
 
     void Update () {
-
+        CheckMatches ();
+        DestroyMatches ();
+        FillEmptySpaces ();
     }
 
     void CheckMatches () {
@@ -70,7 +68,6 @@ public class GridManager : MonoBehaviour {
             if (10 < i && i < color.Length - 10) {
                 tmp = color[i];
                 color[i + 5] = tmp;
-                print ("changed");
             }
         }
 
@@ -178,13 +175,23 @@ public class GridManager : MonoBehaviour {
     void DestroyMatches () {
         for (int i = 0; i < destroyList.Count; i++) {
             //destroyList.Remove (hexagon);
-            Destroy (destroyList[i]);
+            //Destroy (destroyList[i]);
+            destroyList[i].SetActive (false);
+            print (destroyList[i]);
         }
-        destroyList = new List<GameObject> ();
+
     }
 
     void FillEmptySpaces () {
         //TODO: Fill empty spaces from the destroyed gameobjects
+        for (int i = 0; i < destroyList.Count; i++) {
+            int newHexColor = Random.Range (0, colors.Length);
+            destroyList[i].GetComponent<Hexagon> ().color = newHexColor;
+            destroyList[i].GetComponent<Image> ().color = colors[newHexColor];
+            destroyList[i].SetActive (true);
+            print ("Filled!!!!");
+        }
+        destroyList = new List<GameObject> ();
     }
 
     public void TurnRight () {
