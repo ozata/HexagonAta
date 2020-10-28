@@ -7,6 +7,7 @@ using Random = UnityEngine.Random;
 
 public class GridManager : MonoBehaviour {
 
+    ScoreManager scoreManager;
     public Color[] colors = new Color[6];
     public GameObject hexagonPrefab;
     public Sprite hexagonSprite;
@@ -30,7 +31,7 @@ public class GridManager : MonoBehaviour {
 
     void Start () {
         GenerateColors ();
-
+        scoreManager = GameObject.Find("ScoreManager").GetComponent<ScoreManager>();
         color = new int[row * column];
         canvasTransform = GameObject.FindGameObjectWithTag ("Canvas").transform;
         widthPiece = (float) Screen.width / 10;
@@ -95,14 +96,14 @@ public class GridManager : MonoBehaviour {
                 hexagon.GetComponent<Hexagon> ().color = color[i + j];
                 hexagon.name = i.ToString () + " " + j.ToString ();
                 if (counter % 2 == 0) {
-                    height -= (float) addition / (float) 2.0;
+                    height -= (float) addition / 2f;
                 } else {
-                    height += (float) addition / (float) 2.0;
+                    height += (float) addition / 2f;
                 }
                 width += (((float) 3.0 / 4) * addition);
                 counter++;
                 if (counter == column && column % 2 != 0) {
-                    height += (float) addition / (float) 2.0;
+                    height += (float) addition / 2f;
                     counter = 0;
                 }
                 id++;

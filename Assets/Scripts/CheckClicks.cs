@@ -14,7 +14,7 @@ public class CheckClicks : MonoBehaviour {
 
     void Update () {
         //Check if the left Mouse button is clicked
-        if (Input.GetKeyDown (KeyCode.Mouse0)) {
+        if (Input.GetMouseButtonDown (0)) {
             //Set up the new Pointer Event
             PointerEventData pointerData = new PointerEventData (EventSystem.current);
             List<RaycastResult> results = new List<RaycastResult> ();
