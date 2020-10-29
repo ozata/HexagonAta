@@ -12,6 +12,9 @@ public class ScoreManager : MonoBehaviour {
     public int GetScore() {
         return this.score;
     }
+    public void SetScore(int score) {
+        this.score = score;
+    }
 
     public void AddPoints () {
         score += 5;

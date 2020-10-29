@@ -17,6 +17,12 @@ public class GridManager : MonoBehaviour {
     public int row, column;
     int[] color;
 
+    // This flag makes sure game points starts at 0
+    // When the game starts some hexagons gets destroyed
+    // Because they Match, and that makes player gain points
+    // So set score to 0 one time using this flag
+    bool initScore;
+
     // Data Structure that will hold the Hexagon List
     List<List<GameObject>> list = new List<List<GameObject>> ();
     // One row of hexagons
@@ -24,12 +30,15 @@ public class GridManager : MonoBehaviour {
     // Hex objects that'll be destroyed, this list will be unique
     // TODO: Change to a different data structure as lists are not best ones to hold unique objects
     List<GameObject> destroyList = new List<GameObject> ();
+    // Currently selected List
+    List<GameObject> selectedList = new List<GameObject> ();
 
     // 1/10 of width and height to initialize the hexagons on the Canvas.
     float widthPiece;
     float heightPiece;
 
     void Start () {
+        initScore=true;
         GenerateColors ();
         scoreManager = GameObject.Find("ScoreManager").GetComponent<ScoreManager>();
         color = new int[row * column];
@@ -41,9 +50,16 @@ public class GridManager : MonoBehaviour {
     }
 
     void Update () {
+        // Start score as 0
+        if(initScore){
+            scoreManager.SetScore(0);
+            initScore = false;
+        }
+        // Core Game Mechanics
         CheckMatches ();
         DestroyMatches ();
         FillEmptySpaces ();
+
     }
 
     void CheckMatches () {
@@ -92,9 +108,10 @@ public class GridManager : MonoBehaviour {
                 GameObject hexagon = Instantiate (hexagonPrefab, new Vector3 (0, 0, 0), Quaternion.identity) as GameObject;
                 hexagon.transform.SetParent (canvasTransform, false);
                 hexagon.transform.localPosition = new Vector3 (width, height, 0);
-                hexagon.GetComponent<Image> ().color = colors[color[i + j]];
-                hexagon.GetComponent<Hexagon> ().color = color[i + j];
-                hexagon.name = i.ToString () + " " + j.ToString ();
+                hexagon.transform.GetChild(0).GetComponent<Image> ().color = colors[color[i + j]];
+                hexagon.transform.GetChild(0).GetComponent<Hexagon> ().color = color[i + j];
+                hexagon.transform.name = i.ToString () + " " + j.ToString ();
+                hexagon.transform.GetChild(0).name = i.ToString () + " "  + j.ToString () + " child";
                 if (counter % 2 == 0) {
                     height -= (float) addition / 2f;
                 } else {
@@ -118,47 +135,47 @@ public class GridManager : MonoBehaviour {
     // There are 6 cases that will go down as a match and destroy the hexagon trio.
     // Check every hexagon in the game to find if there is a Match
     void CheckTrioMatch (GameObject hexagon) {
-        string[] hexRowCol = hexagon.name.Split (' ');
-        int hexRow = Int32.Parse (hexRowCol[0]);
-        int hexColumn = Int32.Parse (hexRowCol[1]);
-        if (list[hexRow][hexColumn].GetComponent<Hexagon> ().color == list[hexRow - 1][hexColumn - 1].GetComponent<Hexagon> ().color &&
-            list[hexRow][hexColumn].GetComponent<Hexagon> ().color == list[hexRow - 1][hexColumn].GetComponent<Hexagon> ().color &&
-            list[hexRow - 1][hexColumn - 1].GetComponent<Hexagon> ().color == list[hexRow - 1][hexColumn].GetComponent<Hexagon> ().color) {
+        int[] hexRowCol = ParseHexagonNameToRowAndColumn(hexagon);
+        int hexRow = hexRowCol[0];
+        int hexColumn = hexRowCol[1];
+        if (list[hexRow][hexColumn].transform.GetChild(0).GetComponent<Hexagon> ().color == list[hexRow - 1][hexColumn - 1].transform.GetChild(0).GetComponent<Hexagon> ().color &&
+            list[hexRow][hexColumn].transform.GetChild(0).GetComponent<Hexagon> ().color == list[hexRow - 1][hexColumn].transform.GetChild(0).GetComponent<Hexagon> ().color &&
+            list[hexRow - 1][hexColumn - 1].transform.GetChild(0).GetComponent<Hexagon> ().color == list[hexRow - 1][hexColumn].transform.GetChild(0).GetComponent<Hexagon> ().color) {
             AddHexagonToDestroyList (list[hexRow][hexColumn]);
             AddHexagonToDestroyList (list[hexRow - 1][hexColumn]);
             AddHexagonToDestroyList (list[hexRow - 1][hexColumn + 1]);
         }
-        if (list[hexRow][hexColumn].GetComponent<Hexagon> ().color == list[hexRow - 1][hexColumn].GetComponent<Hexagon> ().color &&
-            list[hexRow][hexColumn].GetComponent<Hexagon> ().color == list[hexRow - 1][hexColumn + 1].GetComponent<Hexagon> ().color &&
-            list[hexRow - 1][hexColumn].GetComponent<Hexagon> ().color == list[hexRow - 1][hexColumn + 1].GetComponent<Hexagon> ().color) {
+        if (list[hexRow][hexColumn].transform.GetChild(0).GetComponent<Hexagon> ().color == list[hexRow - 1][hexColumn].transform.GetChild(0).GetComponent<Hexagon> ().color &&
+            list[hexRow][hexColumn].transform.GetChild(0).GetComponent<Hexagon> ().color == list[hexRow - 1][hexColumn + 1].transform.GetChild(0).GetComponent<Hexagon> ().color &&
+            list[hexRow - 1][hexColumn].transform.GetChild(0).GetComponent<Hexagon> ().color == list[hexRow - 1][hexColumn + 1].transform.GetChild(0).GetComponent<Hexagon> ().color) {
             AddHexagonToDestroyList (list[hexRow][hexColumn]);
             AddHexagonToDestroyList (list[hexRow - 1][hexColumn]);
             AddHexagonToDestroyList (list[hexRow - 1][hexColumn + 1]);
         }
-        if (list[hexRow][hexColumn].GetComponent<Hexagon> ().color == list[hexRow - 1][hexColumn + 1].GetComponent<Hexagon> ().color &&
-            list[hexRow][hexColumn].GetComponent<Hexagon> ().color == list[hexRow][hexColumn + 1].GetComponent<Hexagon> ().color &&
-            list[hexRow - 1][hexColumn + 1].GetComponent<Hexagon> ().color == list[hexRow][hexColumn + 1].GetComponent<Hexagon> ().color) {
+        if (list[hexRow][hexColumn].transform.GetChild(0).GetComponent<Hexagon> ().color == list[hexRow - 1][hexColumn + 1].transform.GetChild(0).GetComponent<Hexagon> ().color &&
+            list[hexRow][hexColumn].transform.GetChild(0).GetComponent<Hexagon> ().color == list[hexRow][hexColumn + 1].transform.GetChild(0).GetComponent<Hexagon> ().color &&
+            list[hexRow - 1][hexColumn + 1].transform.GetChild(0).GetComponent<Hexagon> ().color == list[hexRow][hexColumn + 1].transform.GetChild(0).GetComponent<Hexagon> ().color) {
             AddHexagonToDestroyList (list[hexRow][hexColumn]);
             AddHexagonToDestroyList (list[hexRow - 1][hexColumn + 1]);
             AddHexagonToDestroyList (list[hexRow][hexColumn + 1]);
         }
-        if (list[hexRow][hexColumn].GetComponent<Hexagon> ().color == list[hexRow][hexColumn + 1].GetComponent<Hexagon> ().color &&
-            list[hexRow][hexColumn].GetComponent<Hexagon> ().color == list[hexRow + 1][hexColumn].GetComponent<Hexagon> ().color &&
-            list[hexRow][hexColumn + 1].GetComponent<Hexagon> ().color == list[hexRow + 1][hexColumn].GetComponent<Hexagon> ().color) {
+        if (list[hexRow][hexColumn].transform.GetChild(0).GetComponent<Hexagon> ().color == list[hexRow][hexColumn + 1].transform.GetChild(0).GetComponent<Hexagon> ().color &&
+            list[hexRow][hexColumn].transform.GetChild(0).GetComponent<Hexagon> ().color == list[hexRow + 1][hexColumn].transform.GetChild(0).GetComponent<Hexagon> ().color &&
+            list[hexRow][hexColumn + 1].transform.GetChild(0).GetComponent<Hexagon> ().color == list[hexRow + 1][hexColumn].transform.GetChild(0).GetComponent<Hexagon> ().color) {
             AddHexagonToDestroyList (list[hexRow][hexColumn]);
             AddHexagonToDestroyList (list[hexRow + 1][hexColumn]);
             AddHexagonToDestroyList (list[hexRow][hexColumn + 1]);
         }
-        if (list[hexRow][hexColumn].GetComponent<Hexagon> ().color == list[hexRow + 1][hexColumn].GetComponent<Hexagon> ().color &&
-            list[hexRow][hexColumn].GetComponent<Hexagon> ().color == list[hexRow][hexColumn - 1].GetComponent<Hexagon> ().color &&
-            list[hexRow + 1][hexColumn].GetComponent<Hexagon> ().color == list[hexRow][hexColumn - 1].GetComponent<Hexagon> ().color) {
+        if (list[hexRow][hexColumn].transform.GetChild(0).GetComponent<Hexagon> ().color == list[hexRow + 1][hexColumn].transform.GetChild(0).GetComponent<Hexagon> ().color &&
+            list[hexRow][hexColumn].transform.GetChild(0).GetComponent<Hexagon> ().color == list[hexRow][hexColumn - 1].transform.GetChild(0).GetComponent<Hexagon> ().color &&
+            list[hexRow + 1][hexColumn].transform.GetChild(0).GetComponent<Hexagon> ().color == list[hexRow][hexColumn - 1].transform.GetChild(0).GetComponent<Hexagon> ().color) {
             AddHexagonToDestroyList (list[hexRow][hexColumn]);
             AddHexagonToDestroyList (list[hexRow + 1][hexColumn]);
             AddHexagonToDestroyList (list[hexRow - 1][hexColumn]);
         }
-        if (list[hexRow][hexColumn].GetComponent<Hexagon> ().color == list[hexRow][hexColumn - 1].GetComponent<Hexagon> ().color &&
-            list[hexRow][hexColumn].GetComponent<Hexagon> ().color == list[hexRow - 1][hexColumn - 1].GetComponent<Hexagon> ().color &&
-            list[hexRow][hexColumn - 1].GetComponent<Hexagon> ().color == list[hexRow - 1][hexColumn - 1].GetComponent<Hexagon> ().color) {
+        if (list[hexRow][hexColumn].transform.GetChild(0).GetComponent<Hexagon> ().color == list[hexRow][hexColumn - 1].transform.GetChild(0).GetComponent<Hexagon> ().color &&
+            list[hexRow][hexColumn].transform.GetChild(0).GetComponent<Hexagon> ().color == list[hexRow - 1][hexColumn - 1].transform.GetChild(0).GetComponent<Hexagon> ().color &&
+            list[hexRow][hexColumn - 1].transform.GetChild(0).GetComponent<Hexagon> ().color == list[hexRow - 1][hexColumn - 1].transform.GetChild(0).GetComponent<Hexagon> ().color) {
             AddHexagonToDestroyList (list[hexRow][hexColumn]);
             AddHexagonToDestroyList (list[hexRow][hexColumn - 1]);
             AddHexagonToDestroyList (list[hexRow - 1][hexColumn - 1]);
@@ -188,9 +205,9 @@ public class GridManager : MonoBehaviour {
         //TODO: Fill empty spaces from the destroyed gameobjects
         for (int i = 0; i < destroyList.Count; i++) {
             int newHexColor = Random.Range (0, colors.Length);
-            destroyList[i].GetComponent<Hexagon> ().color = newHexColor;
-            destroyList[i].GetComponent<Image> ().color = colors[newHexColor];
-            destroyList[i].SetActive (true);
+            destroyList[i].transform.GetChild(0).GetComponent<Hexagon> ().color = newHexColor;
+            destroyList[i].transform.GetChild(0).GetComponent<Image> ().color = colors[newHexColor];
+            destroyList[i].gameObject.SetActive (true);
             print ("Filled!!!!");
         }
         destroyList = new List<GameObject> ();
@@ -204,13 +221,46 @@ public class GridManager : MonoBehaviour {
 
     }
 
+    // First hit is the position of the gameObject
+    // Second hit is the gameObject that is hit
+    public void HandleClicks(string position, string gameObjectName){
+        print("Game object: " + gameObjectName);
+        print("Position: " + position);
+        int[] rowCol = new int[2];
+        // row col of currently clicked item.
+        int row,col;
+        GameObject hexagon = GameObject.Find(gameObjectName);
+        rowCol = ParseHexagonNameToRowAndColumn(hexagon);
+        row = rowCol[0];
+        col = rowCol[1];
+        print("Clicked row: " + row + "Clicked col: " + col);
+        //hexagon.transform.parent.gameObject.GetComponent<Image>().enabled = true;
+        if(position == "TopLeft" && col%2 != 0){
+            list[row][col].GetComponent<Image>().enabled = true;
+            list[row][col-1].GetComponent<Image>().enabled = true;
+            list[row-1][col].GetComponent<Image>().enabled = true;
+        }else {
+            list[row-1][col].GetComponent<Image>().enabled = true;
+            list[row][col].GetComponent<Image>().enabled = true;
+            list[row-1][col-1].GetComponent<Image>().enabled = true;
+        }
+    }
+
     void GenerateColors () {
-        colors[0] = Color.cyan;
-        colors[1] = Color.red;
-        colors[2] = Color.green;
-        colors[3] = Color.blue;
-        colors[4] = Color.yellow;
-        colors[5] = new Color (0.3f, 0.4f, 0.6f, 1f);
+        colors[0] = new Color32(200, 176, 41, 255);
+        colors[1] = new Color32(122, 114, 229, 255);
+        colors[2] = new Color32(20, 94, 152, 255);
+        colors[3] = new Color32(171, 87, 151, 255);
+        colors[4] = new Color32(218, 208, 192, 255);
+        colors[5] = new Color32(43, 42, 92, 255);
+    }
+
+    int[] ParseHexagonNameToRowAndColumn(GameObject hexagon){
+        string[] hexRowCol = hexagon.transform.name.Split (' ');
+        int[] rowCol = new int[2];
+        rowCol[0] = Int32.Parse(hexRowCol[0]);
+        rowCol[1] = Int32.Parse(hexRowCol[1]);
+        return rowCol;
     }
 
 }
