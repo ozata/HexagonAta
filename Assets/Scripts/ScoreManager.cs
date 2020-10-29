@@ -20,7 +20,7 @@ public class ScoreManager : MonoBehaviour {
         score += 5;
     }
 
-    public void ChangeScoreText(){
+    public void UpdateScoreText(){
         scoreText.text = "Score: " + score;
     }
 

@@ -41,11 +41,11 @@ public class CheckClicks : MonoBehaviour {
             // Assume there will be two hits
             foreach (RaycastResult result in results) {
                 hits[i] = result.gameObject.name;
+                print(hits[i]);
                 i++;
             }
-            if(results[0].gameObject){
-                gridManager.HandleClicks(hits[0],hits[1]);
-            }
+
+            gridManager.HandleClicks(hits[0],hits[1]);
         }
     }
 }

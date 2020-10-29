@@ -50,15 +50,16 @@ public class GridManager : MonoBehaviour {
     }
 
     void Update () {
-        // Start score as 0
-        if(initScore){
-            scoreManager.SetScore(0);
-            initScore = false;
-        }
         // Core Game Mechanics
         CheckMatches ();
         DestroyMatches ();
         FillEmptySpaces ();
+
+        // Start score as 0
+        if(initScore){
+            scoreManager.SetScore(0);
+            scoreManager.UpdateScoreText();
+        }
 
     }
 
@@ -67,7 +68,9 @@ public class GridManager : MonoBehaviour {
             for (int j = 1; j < column - 1; j++) {
                 string name = i.ToString () + " " + j.ToString ();
                 GameObject hex = GameObject.Find (name.ToString ());
-                CheckTrioMatch (hex);
+                if(hex != null){
+                    CheckTrioMatch (hex);
+                }
             }
         }
     }
@@ -184,7 +187,6 @@ public class GridManager : MonoBehaviour {
 
     void AddHexagonToDestroyList (GameObject hexagon) {
         if (!destroyList.Contains (hexagon)) {
-            print ("Hexagon Added: " + hexagon);
             destroyList.Add (hexagon);
         }
     }
@@ -196,7 +198,7 @@ public class GridManager : MonoBehaviour {
             //Destroy (destroyList[i]);
             destroyList[i].SetActive (false);
             scoreManager.AddPoints();
-            scoreManager.ChangeScoreText();
+            scoreManager.UpdateScoreText();
         }
 
     }
@@ -208,7 +210,6 @@ public class GridManager : MonoBehaviour {
             destroyList[i].transform.GetChild(0).GetComponent<Hexagon> ().color = newHexColor;
             destroyList[i].transform.GetChild(0).GetComponent<Image> ().color = colors[newHexColor];
             destroyList[i].gameObject.SetActive (true);
-            print ("Filled!!!!");
         }
         destroyList = new List<GameObject> ();
     }
@@ -224,26 +225,89 @@ public class GridManager : MonoBehaviour {
     // First hit is the position of the gameObject
     // Second hit is the gameObject that is hit
     public void HandleClicks(string position, string gameObjectName){
-        print("Game object: " + gameObjectName);
-        print("Position: " + position);
         int[] rowCol = new int[2];
         // row col of currently clicked item.
         int row,col;
         GameObject hexagon = GameObject.Find(gameObjectName);
         rowCol = ParseHexagonNameToRowAndColumn(hexagon);
+        if(rowCol[0] == -1){
+            return;
+        }
         row = rowCol[0];
         col = rowCol[1];
-        print("Clicked row: " + row + "Clicked col: " + col);
         //hexagon.transform.parent.gameObject.GetComponent<Image>().enabled = true;
-        if(position == "TopLeft" && col%2 != 0){
-            list[row][col].GetComponent<Image>().enabled = true;
-            list[row][col-1].GetComponent<Image>().enabled = true;
-            list[row-1][col].GetComponent<Image>().enabled = true;
-        }else {
-            list[row-1][col].GetComponent<Image>().enabled = true;
-            list[row][col].GetComponent<Image>().enabled = true;
-            list[row-1][col-1].GetComponent<Image>().enabled = true;
+        if(position == "TopLeft"){
+            if(col%2 != 0){
+                list[row][col].GetComponent<Image>().enabled = true;
+                list[row][col-1].GetComponent<Image>().enabled = true;
+                list[row-1][col].GetComponent<Image>().enabled = true;
+            }else if (col%2 ==0){
+                list[row-1][col].GetComponent<Image>().enabled = true;
+                list[row][col].GetComponent<Image>().enabled = true;
+                list[row-1][col-1].GetComponent<Image>().enabled = true;
+            }
         }
+
+        if(position =="TopRight"){
+            if(col%2 != 0){
+                list[row][col].GetComponent<Image>().enabled = true;
+                list[row][col+1].GetComponent<Image>().enabled = true;
+                list[row-1][col].GetComponent<Image>().enabled = true;
+            }else if (col%2 ==0){
+                list[row-1][col].GetComponent<Image>().enabled = true;
+                list[row-1][col+1].GetComponent<Image>().enabled = true;
+                list[row][col].GetComponent<Image>().enabled = true;
+            }
+        }
+
+        if(position == "Left"){
+            if(col%2 != 0){
+                list[row][col].GetComponent<Image>().enabled = true;
+                list[row][col-1].GetComponent<Image>().enabled = true;
+                list[row+1][col-1].GetComponent<Image>().enabled = true;
+            }else if (col%2 == 0){
+                list[row][col].GetComponent<Image>().enabled = true;
+                list[row][col-1].GetComponent<Image>().enabled = true;
+                list[row-1][col-1].GetComponent<Image>().enabled = true;
+            }
+        }
+
+        if(position == "Right"){
+            if(col%2 != 0){
+                list[row][col].GetComponent<Image>().enabled = true;
+                list[row][col+1].GetComponent<Image>().enabled = true;
+                list[row+1][col+1].GetComponent<Image>().enabled = true;
+            }else if (col%2 == 0){
+                list[row][col].GetComponent<Image>().enabled = true;
+                list[row][col+1].GetComponent<Image>().enabled = true;
+                list[row-1][col+1].GetComponent<Image>().enabled = true;
+            }
+        }
+
+        if(position == "BottomLeft"){
+            if(col%2 != 0){
+                list[row][col].GetComponent<Image>().enabled = true;
+                list[row+1][col].GetComponent<Image>().enabled = true;
+                list[row+1][col+1].GetComponent<Image>().enabled = true;
+            }else if (col%2 == 0){
+                list[row][col].GetComponent<Image>().enabled = true;
+                list[row][col-1].GetComponent<Image>().enabled = true;
+                list[row+1][col].GetComponent<Image>().enabled = true;
+            }
+        }
+
+        if(position == "BottomRight"){
+            if(col%2 != 0){
+                list[row][col].GetComponent<Image>().enabled = true;
+                list[row+1][col].GetComponent<Image>().enabled = true;
+                list[row+1][col+1].GetComponent<Image>().enabled = true;
+            }else if (col%2 == 0){
+                list[row][col].GetComponent<Image>().enabled = true;
+                list[row+1][col].GetComponent<Image>().enabled = true;
+                list[row][col+1].GetComponent<Image>().enabled = true;
+            }
+        }
+
     }
 
     void GenerateColors () {
@@ -256,10 +320,15 @@ public class GridManager : MonoBehaviour {
     }
 
     int[] ParseHexagonNameToRowAndColumn(GameObject hexagon){
-        string[] hexRowCol = hexagon.transform.name.Split (' ');
         int[] rowCol = new int[2];
-        rowCol[0] = Int32.Parse(hexRowCol[0]);
-        rowCol[1] = Int32.Parse(hexRowCol[1]);
+        if(hexagon.transform.name.Contains(" ")){
+            string[] hexRowCol = hexagon.transform.name.Split (' ');
+            rowCol[0] = Int32.Parse(hexRowCol[0]);
+            rowCol[1] = Int32.Parse(hexRowCol[1]);
+            return rowCol;
+        }
+        rowCol[0] = -1;
+        rowCol[1] = -1;
         return rowCol;
     }
 
