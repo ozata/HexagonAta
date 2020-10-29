@@ -178,7 +178,8 @@ public class GridManager : MonoBehaviour {
             //destroyList.Remove (hexagon);
             //Destroy (destroyList[i]);
             destroyList[i].SetActive (false);
-            print (destroyList[i]);
+            scoreManager.AddPoints();
+            scoreManager.ChangeScoreText();
         }
 
     }
