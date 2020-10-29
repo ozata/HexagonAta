@@ -63,6 +63,19 @@ public class GridManager : MonoBehaviour {
 
     }
 
+    void SelectTrio(){
+        for(int i = 0 ; i < selectedList.Count ; i++){
+             selectedList[i].GetComponent<Image>().enabled = true;
+        }
+    }
+
+    void DeselectTrio(){
+        for(int i = 0 ; i < selectedList.Count ; i++){
+            selectedList[i].GetComponent<Image>().enabled = false;
+        }
+        selectedList = new List<GameObject>();
+    }
+
     void CheckMatches () {
         for (int i = 1; i < row - 1; i++) {
             for (int j = 1; j < column - 1; j++) {
@@ -225,6 +238,7 @@ public class GridManager : MonoBehaviour {
     // First hit is the position of the gameObject
     // Second hit is the gameObject that is hit
     public void HandleClicks(string position, string gameObjectName){
+        DeselectTrio();
         int[] rowCol = new int[2];
         // row col of currently clicked item.
         int row,col;
@@ -235,79 +249,84 @@ public class GridManager : MonoBehaviour {
         }
         row = rowCol[0];
         col = rowCol[1];
+        if(row == 0 && col == 0 || row == this.row-1 && col == this.column -1){
+            return;
+        }
+
         //hexagon.transform.parent.gameObject.GetComponent<Image>().enabled = true;
         if(position == "TopLeft"){
-            if(col%2 != 0){
-                list[row][col].GetComponent<Image>().enabled = true;
-                list[row][col-1].GetComponent<Image>().enabled = true;
-                list[row-1][col].GetComponent<Image>().enabled = true;
+            if(col%2!=0){
+                selectedList.Add(list[row][col]);
+                selectedList.Add(list[row][col-1]);
+                selectedList.Add(list[row-1][col]);
             }else if (col%2 ==0){
-                list[row-1][col].GetComponent<Image>().enabled = true;
-                list[row][col].GetComponent<Image>().enabled = true;
-                list[row-1][col-1].GetComponent<Image>().enabled = true;
+                selectedList.Add(list[row-1][col]);
+                selectedList.Add(list[row][col]);
+                selectedList.Add(list[row-1][col-1]);
             }
         }
 
         if(position =="TopRight"){
             if(col%2 != 0){
-                list[row][col].GetComponent<Image>().enabled = true;
-                list[row][col+1].GetComponent<Image>().enabled = true;
-                list[row-1][col].GetComponent<Image>().enabled = true;
+                selectedList.Add(list[row][col]);
+                selectedList.Add(list[row][col+1]);
+                selectedList.Add(list[row-1][col]);
             }else if (col%2 ==0){
-                list[row-1][col].GetComponent<Image>().enabled = true;
-                list[row-1][col+1].GetComponent<Image>().enabled = true;
-                list[row][col].GetComponent<Image>().enabled = true;
+                selectedList.Add(list[row][col]);
+                selectedList.Add(list[row-1][col+1]);
+                selectedList.Add(list[row-1][col]);
             }
         }
 
         if(position == "Left"){
             if(col%2 != 0){
-                list[row][col].GetComponent<Image>().enabled = true;
-                list[row][col-1].GetComponent<Image>().enabled = true;
-                list[row+1][col-1].GetComponent<Image>().enabled = true;
+                selectedList.Add(list[row][col]);
+                selectedList.Add(list[row][col-1]);
+                selectedList.Add(list[row+1][col-1]);
             }else if (col%2 == 0){
-                list[row][col].GetComponent<Image>().enabled = true;
-                list[row][col-1].GetComponent<Image>().enabled = true;
-                list[row-1][col-1].GetComponent<Image>().enabled = true;
+                selectedList.Add(list[row][col]);
+                selectedList.Add(list[row][col-1]);
+                selectedList.Add(list[row-1][col-1]);
             }
         }
 
         if(position == "Right"){
             if(col%2 != 0){
-                list[row][col].GetComponent<Image>().enabled = true;
-                list[row][col+1].GetComponent<Image>().enabled = true;
-                list[row+1][col+1].GetComponent<Image>().enabled = true;
+                selectedList.Add(list[row][col]);
+                selectedList.Add(list[row][col+1]);
+                selectedList.Add(list[row+1][col+1]);
             }else if (col%2 == 0){
-                list[row][col].GetComponent<Image>().enabled = true;
-                list[row][col+1].GetComponent<Image>().enabled = true;
-                list[row-1][col+1].GetComponent<Image>().enabled = true;
+                selectedList.Add(list[row][col]);
+                selectedList.Add(list[row][col+1]);
+                selectedList.Add(list[row-1][col+1]);
             }
         }
 
         if(position == "BottomLeft"){
             if(col%2 != 0){
-                list[row][col].GetComponent<Image>().enabled = true;
-                list[row+1][col].GetComponent<Image>().enabled = true;
-                list[row+1][col+1].GetComponent<Image>().enabled = true;
+                selectedList.Add(list[row][col]);
+                selectedList.Add(list[row+1][col-1]);
+                selectedList.Add(list[row+1][col]);
             }else if (col%2 == 0){
-                list[row][col].GetComponent<Image>().enabled = true;
-                list[row][col-1].GetComponent<Image>().enabled = true;
-                list[row+1][col].GetComponent<Image>().enabled = true;
+                selectedList.Add(list[row][col]);
+                selectedList.Add(list[row][col-1]);
+                selectedList.Add(list[row+1][col]);
             }
         }
 
         if(position == "BottomRight"){
             if(col%2 != 0){
-                list[row][col].GetComponent<Image>().enabled = true;
-                list[row+1][col].GetComponent<Image>().enabled = true;
-                list[row+1][col+1].GetComponent<Image>().enabled = true;
+                selectedList.Add(list[row][col]);
+                selectedList.Add(list[row+1][col]);
+                selectedList.Add(list[row+1][col+1]);
             }else if (col%2 == 0){
-                list[row][col].GetComponent<Image>().enabled = true;
-                list[row+1][col].GetComponent<Image>().enabled = true;
-                list[row][col+1].GetComponent<Image>().enabled = true;
+                selectedList.Add(list[row][col]);
+                selectedList.Add(list[row+1][col]);
+                selectedList.Add(list[row][col+1]);
             }
         }
 
+        SelectTrio();
     }
 
     void GenerateColors () {
