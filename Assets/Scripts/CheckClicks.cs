@@ -41,7 +41,6 @@ public class CheckClicks : MonoBehaviour {
             // Assume there will be two hits
             foreach (RaycastResult result in results) {
                 hits[i] = result.gameObject.name;
-                print(hits[i]);
                 i++;
             }
 

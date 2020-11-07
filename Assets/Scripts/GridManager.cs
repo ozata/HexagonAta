@@ -55,7 +55,7 @@ public class GridManager : MonoBehaviour {
         DestroyMatches ();
         FillEmptySpaces ();
 
-        // Start score as 0
+        // Reset- score as 0 because some hexagons will match at beginning and explode and add to score.
         if(initScore){
             scoreManager.SetScore(0);
             scoreManager.UpdateScoreText();
@@ -66,6 +66,7 @@ public class GridManager : MonoBehaviour {
     void SelectTrio(){
         for(int i = 0 ; i < selectedList.Count ; i++){
              selectedList[i].GetComponent<Image>().enabled = true;
+             print(selectedList[i]);
         }
     }
 
@@ -228,11 +229,11 @@ public class GridManager : MonoBehaviour {
     }
 
     public void TurnRight () {
-
+        print("Turn Right");
     }
 
     public void TurnLeft () {
-
+        print("Turn Left");
     }
 
     // First hit is the position of the gameObject
