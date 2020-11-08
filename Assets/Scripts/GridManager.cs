@@ -92,8 +92,8 @@ public class GridManager : MonoBehaviour {
     // Creates a random integer array that'll be used for color.
     void CreateRandomColor () {
         int tmp = 0;
-        Random.InitState (System.DateTime.Now.Millisecond);
         for (int i = 0; i < color.Length; i++) {
+            Random.InitState (System.DateTime.Now.Millisecond);
             color[i] = Random.Range (0, colors.Length);
             if (i > 1 && color[i - 1] == color[i]) {
                 color[i - 1] = Random.Range (1, colors.Length - 1);
@@ -229,11 +229,44 @@ public class GridManager : MonoBehaviour {
     }
 
     public void TurnRight () {
-        print("Turn Right");
+        if(selectedList.Count == 0) return;
+        // Core hexagon that is selected
+        int[] hexRowCol = ParseHexagonNameToRowAndColumn(selectedList[0]);
+        int hexRow = hexRowCol[0];
+        int hexCol = hexRowCol[1];
+        // Last element is the which position e.g. TopRight, Left, BottomRight
+        //string position = selectedList[3].gameObject.name;
+
+        GameObject copy1;
+        GameObject copy2;
+        // If column is even numbered
+        if(hexCol % 2 == 0 ){
+
+        } else if (hexCol % 2 != 0){
+            // position == Right
+            copy1 = list[hexRow][hexCol+1];
+            copy2 = list[hexRow+1][hexCol+1];
+
+            //for(int i = 0 ; i < 3 ; i++)
+            list[hexRow][hexCol+1] = list[hexRow][hexCol];
+            list[hexRow][hexCol+1].GetComponent<Image>().color = list[hexRow][hexCol].GetComponent<Image>().color;
+
+            list[hexRow+1][hexCol+1] = copy1;
+            list[hexRow+1][hexCol+1].GetComponent<Image>().color = copy1.GetComponent<Image>().color;
+
+            list[hexRow][hexCol].GetComponent<Image>().color = copy2.GetComponent<Image>().color;
+            list[hexRow][hexCol] = copy2;
+            // Check if there's a match with every turn
+            CheckMatches();
+        }
+
     }
 
     public void TurnLeft () {
         print("Turn Left");
+        if(selectedList.Count == 0){
+            return;
+        }
     }
 
     // First hit is the position of the gameObject
@@ -261,8 +294,8 @@ public class GridManager : MonoBehaviour {
                 selectedList.Add(list[row][col-1]);
                 selectedList.Add(list[row-1][col]);
             }else if (col%2 ==0){
-                selectedList.Add(list[row-1][col]);
                 selectedList.Add(list[row][col]);
+                selectedList.Add(list[row-1][col]);
                 selectedList.Add(list[row-1][col-1]);
             }
         }

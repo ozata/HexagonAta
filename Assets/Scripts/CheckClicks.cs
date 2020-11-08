@@ -43,8 +43,9 @@ public class CheckClicks : MonoBehaviour {
                 hits[i] = result.gameObject.name;
                 i++;
             }
-
-            gridManager.HandleClicks(hits[0],hits[1]);
+            if(hits[1].Contains("child")){
+                gridManager.HandleClicks(hits[0],hits[1]);
+            }
         }
     }
 }
