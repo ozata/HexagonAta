@@ -7,6 +7,7 @@ using Random = UnityEngine.Random;
 
 public class GridManager : MonoBehaviour {
 
+    const int SelectedHexCount = 3;
     ScoreManager scoreManager;
     public Color[] colors = new Color[6];
     public GameObject hexagonPrefab;
@@ -51,16 +52,21 @@ public class GridManager : MonoBehaviour {
 
     void Update () {
         // Core Game Mechanics
-        CheckMatches ();
-        DestroyMatches ();
-        FillEmptySpaces ();
-
         // Reset- score as 0 because some hexagons will match at beginning and explode and add to score.
         if(initScore){
+            CoreGameplay();
             scoreManager.SetScore(0);
             scoreManager.UpdateScoreText();
+            initScore = false;
         }
 
+    }
+
+    bool CoreGameplay(){
+        CheckMatches ();
+        DestroyMatches ();
+        bool match = FillEmptySpaces ();
+        return match;
     }
 
     void SelectTrio(){
@@ -217,15 +223,18 @@ public class GridManager : MonoBehaviour {
 
     }
 
-    void FillEmptySpaces () {
+    bool FillEmptySpaces () {
         //TODO: Fill empty spaces from the destroyed gameobjects
+        bool match = false;
         for (int i = 0; i < destroyList.Count; i++) {
             int newHexColor = Random.Range (0, colors.Length);
             destroyList[i].transform.GetChild(0).GetComponent<Hexagon> ().color = newHexColor;
             destroyList[i].transform.GetChild(0).GetComponent<Image> ().color = colors[newHexColor];
             destroyList[i].gameObject.SetActive (true);
+            match = true;
         }
         destroyList = new List<GameObject> ();
+        return match;
     }
 
     public void TurnRight () {
@@ -239,25 +248,36 @@ public class GridManager : MonoBehaviour {
 
         GameObject copy1;
         GameObject copy2;
+        GameObject copy3;
         // If column is even numbered
         if(hexCol % 2 == 0 ){
 
         } else if (hexCol % 2 != 0){
-            // position == Right
-            copy1 = list[hexRow][hexCol+1];
-            copy2 = list[hexRow+1][hexCol+1];
+            for(int i = 0 ; i < SelectedHexCount; i++){
+                copy1 = CreateNewHexagon(hexRow,hexCol+1,
+                                        list[hexRow][hexCol+1].transform.localPosition.x,
+                                        list[hexRow][hexCol+1].transform.localPosition.y,
+                                        list[hexRow][hexCol].transform.GetChild(0).GetComponent<Hexagon>().color,
+                                        list[hexRow][hexCol].transform.GetChild(0).GetComponent<Image>().color);
+                copy2 = CreateNewHexagon(hexRow+1, hexCol+1,
+                                        list[hexRow+1][hexCol+1].transform.localPosition.x,
+                                        list[hexRow+1][hexCol+1].transform.localPosition.y,
+                                        list[hexRow][hexCol+1].transform.GetChild(0).GetComponent<Hexagon>().color,
+                                        list[hexRow][hexCol+1].transform.GetChild(0).GetComponent<Image>().color);
+                copy3 = CreateNewHexagon(hexRow, hexCol,
+                                        list[hexRow][hexCol].transform.localPosition.x,
+                                        list[hexRow][hexCol].transform.localPosition.y,
+                                        list[hexRow+1][hexCol+1].transform.GetChild(0).GetComponent<Hexagon>().color,
+                                        list[hexRow+1][hexCol+1].transform.GetChild(0).GetComponent<Image>().color);
 
-            //for(int i = 0 ; i < 3 ; i++)
-            list[hexRow][hexCol+1] = list[hexRow][hexCol];
-            list[hexRow][hexCol+1].GetComponent<Image>().color = list[hexRow][hexCol].GetComponent<Image>().color;
-
-            list[hexRow+1][hexCol+1] = copy1;
-            list[hexRow+1][hexCol+1].GetComponent<Image>().color = copy1.GetComponent<Image>().color;
-
-            list[hexRow][hexCol].GetComponent<Image>().color = copy2.GetComponent<Image>().color;
-            list[hexRow][hexCol] = copy2;
-            // Check if there's a match with every turn
-            CheckMatches();
+                list[hexRow][hexCol] = copy3;
+                list[hexRow][hexCol+1] = copy1;
+                list[hexRow+1][hexCol+1] = copy2;
+                bool match = CoreGameplay();
+                if(match){
+                    return;
+                }
+            }
         }
 
     }
@@ -370,6 +390,18 @@ public class GridManager : MonoBehaviour {
         colors[3] = new Color32(171, 87, 151, 255);
         colors[4] = new Color32(218, 208, 192, 255);
         colors[5] = new Color32(43, 42, 92, 255);
+    }
+
+    GameObject CreateNewHexagon(int i, int j, float width, float height, int colorCode, Color color){
+        GameObject hexagon = Instantiate (hexagonPrefab, new Vector3 (0, 0, 0), Quaternion.identity) as GameObject;
+        hexagon.transform.SetParent (canvasTransform, false);
+        hexagon.transform.name = i.ToString () + " " + j.ToString ();
+        hexagon.transform.GetChild(0).name = i.ToString () + " "  + j.ToString () + " child";
+        hexagon.transform.localPosition = new Vector3 (width, height, 0);
+        hexagon.transform.localPosition = new Vector3 (width, height, 0);
+        hexagon.transform.GetChild(0).GetComponent<Hexagon> ().color = colorCode;
+        hexagon.transform.GetChild(0).GetComponent<Image> ().color = color;
+        return hexagon;
     }
 
     int[] ParseHexagonNameToRowAndColumn(GameObject hexagon){

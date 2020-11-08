@@ -1058,8 +1058,8 @@ MonoBehaviour:
   hexagonPrefab: {fileID: 7273569586696982856, guid: 2c0a52a91df734d978c00997d4c8719f,
     type: 3}
   hexagonSprite: {fileID: 21300000, guid: 6060e868078e24ea6a831e1770348e1b, type: 3}
-  row: 10
-  column: 12
+  row: 8
+  column: 9
 --- !u!4 &1235407578
 Transform:
   m_ObjectHideFlags: 0
